@@ -1,21 +1,10 @@
-var _ = require("lodash");
-var chai = require("chai");
-var sinon = require("sinon");
-var sinonChai = require("sinon-chai");
-var expect = chai.expect;
-chai.use(sinonChai);
-
-const datbase = require('../main/datbase');
 const printInventory = require('../main/main');
-const getShoppingCart = require('../main/main');
-const getShoppingLists = require('../main/main');
-const getBarcodeList = require('../main/main');
 
-describe('pos', function () {
+describe('pos', function() {
     var allItems;
     var inputs;
 
-    beforeEach(function () {
+    beforeEach(function() {
         //allItems = loadAllItems();
         inputs = [
             'ITEM000001',
@@ -30,7 +19,7 @@ describe('pos', function () {
         ];
     });
 
-    it('should print correct text', function () {
+    it('should print correct text', function() {
 
         spyOn(console, 'log');
 
@@ -53,15 +42,49 @@ describe('pos', function () {
         expect(console.log).toHaveBeenCalledWith(expectText);
     });
 
-    it('打印购物清单信息', function () {
+    it('测试购物编码和数量', function() {
 
-       var item = getBarcodeList(inputs);
+        spyOn(console, 'group');
+
+        printInventory(inputs);
+
         let expectText = {
             "ITEM000001": 5,
             "ITEM000003": 2,
             "ITEM000005": 3,
         }
+        expect(console.group).toHaveBeenCalledWith(expectText);
+    });
 
-        expect(item).to.equal(expectText);
+    it('测试购物清单详细信息', function() {
+        spyOn(console, 'info');
+
+        printInventory(inputs);
+        let expectText = [{
+                barcode: 'ITEM000001',
+                name: '雪碧',
+                unit: '瓶',
+                price: 3.00,
+                count: 5,
+                free: 1,
+            },
+            {
+                barcode: 'ITEM000003',
+                name: '荔枝',
+                unit: '斤',
+                price: 15.00,
+                count: 2,
+                free: 0,
+            },
+            {
+                barcode: 'ITEM000005',
+                name: '方便面',
+                unit: '袋',
+                price: 4.50,
+                count: 3,
+                free: 1,
+            }
+        ];
+        expect(console.info).toHaveBeenCalledWith(expectText);
     });
 });
